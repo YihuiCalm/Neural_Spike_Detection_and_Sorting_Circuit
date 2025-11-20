@@ -1,0 +1,109 @@
+**.subckt cap_mem_tb1
+Vbias vbias GND 2v
+VDD net1 GND 5v
+Vmeas VDD net1 0
+XM1 net2 vmem2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 ad='int((nf+1)/2) * W/nf * 0.29'
++ as='int((nf+2)/2) * W/nf * 0.29' pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)'
++ nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1 
+C2 net2 GND 10p m=1
+X2 net2 net3 vmem2 vbias transamp_1
+x2 vin net3 vg transmission_gate
+XM2 vmem vg_bar vmem1 net4 sky130_fd_pr__pfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29'
++ as='int((nf+2)/2) * W/nf * 0.29' pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)'
++ nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1 
+X1 vmem net4 net4 vbias2 transamp_1
+C1 vmem GND 1p m=1
+X3 net2 vmem1 vmem1 vbias1 transamp_1
+Vbias2 vbias1 GND 2v
+Vbias3 vbias2 GND 1.1v
+x3 vg_bar vg inverter
+x4 net2 net2 vg transmission_gate
+**** begin user architecture code
+
+
+.model fsrc1 filesource(file="data/eval_dataset/electrode_ch1.txt" timeoffset=0 timescale=1
++ amploffset=[0] amplscale=[1.0] timerelative=false amplstep=false)
+a1 %v[vin] fsrc1
+.model fsrc2 filesource(file="data/eval_dataset/teach_ch1.txt" timeoffset=0 timescale=1
++ amploffset=[0] amplscale=[1.0] timerelative=false amplstep=false)
+a2 %v[vg] fsrc2
+.control
+save all
+tran 10us 600ms
+plot  v(vin) v(vmem) v(vg)
+.endc
+
+
+ .lib /home/ubuntulab/IC/PDK/skywater-pdk/libraries/sky130_fd_pr_ngspice/latest/models/sky130.lib.spice tt
+
+.param mc_mm_switch=0
+.param mc_pr_switch=1
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  /media/sf_share/final_project/transamp_1.sym # of pins=4
+* sym_path: /media/sf_share/final_project/transamp_1.sym
+* sch_path: /media/sf_share/final_project/transamp_1.sch
+.subckt transamp_1  vin_p vin_n IVout vbias
+*.opin IVout
+*.ipin vin_p
+*.ipin vin_n
+*.ipin vbias
+XM1 net1 vbias GND GND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM3 net2 vin_p net1 GND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM4 IVout net2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM2 IVout vin_n net1 GND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM5 net2 net2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+.ends
+
+
+* expanding   symbol:  /media/sf_share/final_project/transmission_gate.sym # of pins=3
+* sym_path: /media/sf_share/final_project/transmission_gate.sym
+* sch_path: /media/sf_share/final_project/transmission_gate.sch
+.subckt transmission_gate  vin vout vg
+*.ipin vin
+*.ipin vg
+*.opin vout
+x1 vg_bar vg inverter
+XM5 vin vg vout GND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=0.5 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM7 vout vg_bar vin VDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 ad='int((nf+1)/2) * W/nf * 0.29'
++ as='int((nf+2)/2) * W/nf * 0.29' pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)'
++ nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1 
+XM6 vout vg_bar GND GND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=0.5 nf=1 ad='int((nf+1)/2) * W/nf * 0.29'
++ as='int((nf+2)/2) * W/nf * 0.29' pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)'
++ nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1 
+.ends
+
+
+* expanding   symbol:  /media/sf_share/final_project/inverter.sym # of pins=2
+* sym_path: /media/sf_share/final_project/inverter.sym
+* sch_path: /media/sf_share/final_project/inverter.sch
+.subckt inverter  vout vin
+*.ipin vin
+*.opin vout
+XM3 vout vin VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+XM5 vout vin GND GND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W'
++ sa=0 sb=0 sd=0 mult=1 m=1 
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+** flattened .save nodes
+.save I(Vmeas)
+.end
